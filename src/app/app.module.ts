@@ -10,6 +10,11 @@ import { MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, Mat
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { TalksComponent } from './talks/talks.component';
+import { ChatComponent } from './chat/chat.component';
+import { MessagesComponent } from './chat/messages/messages.component';
+import { UsersComponent } from './chat/users/users.component';
+import { FormComponent } from './chat/form/form.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -17,13 +22,18 @@ import { TalksComponent } from './talks/talks.component';
     NavigationComponent,
     DashboardComponent,
     HomeComponent,
-    TalksComponent
+    TalksComponent,
+    ChatComponent,
+    MessagesComponent,
+    UsersComponent,
+    FormComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     LayoutModule,
+    FormsModule,
     MatToolbarModule,
     MatButtonModule,
     MatSidenavModule,

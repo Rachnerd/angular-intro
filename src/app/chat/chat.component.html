@@ -1,0 +1,19 @@
+<mat-grid-list cols="3" rowHeight="100px">
+  <mat-grid-tile
+    [colspan]="2"
+    [rowspan]="4"
+    [style.background]="'red'">
+    <app-messages [chatMessages]="chatMessages"></app-messages>
+  </mat-grid-tile>
+  <mat-grid-tile
+    [colspan]="1"
+    [rowspan]="4"
+    [style.background]="'blue'">
+    <app-users></app-users>
+  </mat-grid-tile>
+  <mat-grid-tile
+    [colspan]="3"
+    [style.background]="'green'">
+    <app-form (send)="sendMessage($event)"></app-form>
+  </mat-grid-tile>
+</mat-grid-list>
