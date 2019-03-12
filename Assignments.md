@@ -1,5 +1,8 @@
 ## Assignments
-[Cheatsheet](https://angular.io/guide/cheatsheet)
+[Initial steps](https://github.com/bertjan/a4jd-demo-app)
+
+[Angular Cheatsheet](https://angular.io/guide/cheatsheet)
+
 ### 1. Setting up the router and navigation component
 ```
 - Replace AppComponent's html `src/app/app.component.html` content with NavigationComponent's selector (html tag):
