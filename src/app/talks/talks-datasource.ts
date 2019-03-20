@@ -1,7 +1,9 @@
 import { DataSource } from '@angular/cdk/collections';
 import { MatPaginator, MatSort } from '@angular/material';
-import { map } from 'rxjs/operators';
-import { Observable, of as observableOf, merge } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { Observable, of as observableOf, merge, Subscription, combineLatest } from 'rxjs';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 // TODO: Replace this with your own data model type
 export interface TalksItem {
@@ -41,7 +43,7 @@ const EXAMPLE_DATA: TalksItem[] = [
 export class TalksDataSource extends DataSource<TalksItem> {
   data: TalksItem[] = EXAMPLE_DATA;
 
-  constructor(private paginator: MatPaginator, private sort: MatSort) {
+  constructor(private paginator: MatPaginator, private sort: MatSort, private apollo: Apollo, query: any) {
     super();
   }
 
@@ -50,55 +52,34 @@ export class TalksDataSource extends DataSource<TalksItem> {
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-  connect(): Observable<TalksItem[]> {
-    // Combine everything that affects the rendered data into one update
-    // stream for the data-table to consume.
-    const dataMutations = [
-      observableOf(this.data),
+  connect(): Observable<any> {
+    return combineLatest(
       this.paginator.page,
       this.sort.sortChange
-    ];
+    )
+    .pipe(
+      switchMap(([pageInfo, sortInfo]) => {
+        return this.apollo.watchQuery<any>({
+          query: this.query,
+          variables: {
+            page: pageInfo.pageIndex,
+            pageSize: pageInfo.pageSize,
+            sortColumn: sortInfo.active,
+            sortDirection: sortInfo.direction,
+          },
+          fetchPolicy: 'no-cache',
 
-    // Set the paginator's length
-    this.paginator.length = this.data.length;
-
-    return merge(...dataMutations).pipe(map(() => {
-      return this.getPagedData(this.getSortedData([...this.data]));
-    }));
+        })
+        .valueChanges;
+      })
+    );
   }
 
   /**
    *  Called when the table is being destroyed. Use this function, to clean up
    * any open connections or free any held resources that were set up during connect.
    */
-  disconnect() {}
-
-  /**
-   * Paginate the data (client-side). If you're using server-side pagination,
-   * this would be replaced by requesting the appropriate data from the server.
-   */
-  private getPagedData(data: TalksItem[]) {
-    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
-    return data.splice(startIndex, this.paginator.pageSize);
-  }
-
-  /**
-   * Sort the data (client-side). If you're using server-side sorting,
-   * this would be replaced by requesting the appropriate data from the server.
-   */
-  private getSortedData(data: TalksItem[]) {
-    if (!this.sort.active || this.sort.direction === '') {
-      return data;
-    }
-
-    return data.sort((a, b) => {
-      const isAsc = this.sort.direction === 'asc';
-      switch (this.sort.active) {
-        case 'name': return compare(a.name, b.name, isAsc);
-        case 'id': return compare(+a.id, +b.id, isAsc);
-        default: return 0;
-      }
-    });
+  disconnect() {
   }
 }
 

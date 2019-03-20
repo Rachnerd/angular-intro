@@ -1,1 +1,10 @@
 <h1>Home</h1>
+<div class="example-container">
+  <mat-form-field>
+    <input  #input matInput placeholder="Enter your book id" [formControl]="bookId" required>
+    <mat-error *ngIf="bookId.invalid">{{getErrorMessage()}}</mat-error>
+  </mat-form-field>
+</div>
+<button (click)="getBook(input.value)" #button>Get</button>
+
+<p *ngIf="book">{{ book.title }}</p>
